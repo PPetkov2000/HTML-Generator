@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>HTML Generator</title>
+    <link rel="stylesheet" href="styles.css" />
+    <script src="main.js" defer></script>
+  </head>
+  <body>
+    <div class="content-wrapper">
+      <h1 class="content-title">HTML Generator</h1>
+      <div class="generate-element-wrapper">
+        <div>
+          <label for="select-elements">Generate HTML element</label>
+          <select id="select-elements" class="select-elements">
+            <option value=""></option>
+            <option value="section">section</option>
+            <option value="article">article</option>
+            <option value="main">main</option>
+            <option value="aside">aside</option>
+            <option value="nav">nav</option>
+            <option value="header">header</option>
+            <option value="footer">footer</option>
+            <option value="div">div</option>
+            <option value="p">p</option>
+            <option value="span">span</option>
+            <option value="ol">ol</option>
+            <option value="ul">ul</option>
+            <option value="li">li</option>
+            <option value="a">a</option>
+            <option value="input">input</option>
+            <option value="img">img</option>
+          </select>
+        </div>
+        <div>
+          <label for="content">Content</label>
+          <input
+            type="text"
+            id="element-content"
+            placeholder="Element content..."
+          />
+          <span>OR</span>
+          <button id="add-nested-element-button" class="generate-button">
+            Add nested element
+          </button>
+        </div>
+        <div>
+          <label for="attributes">Attributes</label>
+          <select id="element-attributes">
+            <option value=""></option>
+            <option value="id">id</option>
+            <option value="className">class</option>
+            <option value="style">style</option>
+          </select>
+          <input
+            type="text"
+            id="element-attributes-input"
+            placeholder="Element attributes..."
+          />
+        </div>
+        <div
+          id="generate-nested-element-wrapper"
+          class="generate-nested-element-wrapper"
+        ></div>
+        <div>
+          <button id="generate-button" class="generate-button">Generate</button>
+        </div>
+        <div id="generated-elements" class="generated-elements"></div>
+      </div>
+    </div>
+  </body>
+</html>
