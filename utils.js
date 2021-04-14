@@ -37,4 +37,18 @@ function elementsExist(...elements) {
   return elements.every((element) => element != null);
 }
 
-export { createElement, getAttributes, capitalize, elementsExist };
+function transformToCamelCase(str) {
+  if (str.includes("-")) {
+    const parts = str.split("-");
+    str = parts[0] + parts.slice(1).map(capitalize).join("");
+  }
+  return str;
+}
+
+export {
+  createElement,
+  getAttributes,
+  capitalize,
+  elementsExist,
+  transformToCamelCase,
+};
