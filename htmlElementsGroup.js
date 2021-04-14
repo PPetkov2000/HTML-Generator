@@ -14,16 +14,13 @@ function generateSelectFormGroup(optionValues, label, attributes) {
     createOption(""),
     ...optionValues.map((element) => createOption(element, { value: element })),
   ];
-  const select = createSelect(options, { id: attributes.id });
+  const select = createSelect(options, attributes);
   return createDiv([selectLabel, select], { className: "form-group" });
 }
 
 function generateInputFromGroup(label, attributes) {
   const inputLabel = createLabel(label, { htmlFor: attributes.id });
-  const input = createInput("", {
-    id: attributes.id,
-    placeholder: attributes.placeholder,
-  });
+  const input = createInput("", attributes);
   return createDiv([inputLabel, input], { className: "form-group" });
 }
 
