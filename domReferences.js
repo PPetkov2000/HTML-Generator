@@ -1,21 +1,59 @@
-const domReferences = {
-  generatedElements: () => document.getElementById("generated-elements"),
-  generateNestedElementWrapper: () =>
-    document.getElementById("generate-nested-element-wrapper"),
-  selectElements: () => document.getElementById("select-elements"),
-  elementContent: () => document.getElementById("element-content"),
-  elementAttributes: () => document.getElementById("element-attributes"),
-  elementAttributesInput: () =>
-    document.getElementById("element-attributes-input"),
-  nestedElementSelect: () => document.querySelector(".nested-element-select"),
-  nestedElementContent: () => document.querySelector(".nested-element-content"),
-  nestedElementAttributesSelect: () =>
-    document.querySelector(".nested-element-attributes-select"),
-  nestedElementAttributesInput: () =>
-    document.querySelector(".nested-element-attributes-input"),
-  generateButton: () => document.getElementById("generate-button"),
-  addNestedElementButton: () =>
-    document.getElementById("add-nested-element-button"),
-};
+import { transformToCamelCase } from "./utils.js";
+
+const elementsById = [
+  "generated-elements",
+  "generate-nested-element-wrapper",
+  "select-elements",
+  "element-content",
+  "element-attributes",
+  "element-attributes-input",
+  "generate-button",
+  "add-nested-element-button",
+];
+
+const elementsByClassName = [
+  "nested-element-select",
+  "nested-element-content",
+  "nested-element-attributes-select",
+  "nested-element-attributes-input",
+];
+
+const elementsByTagName = [];
+
+const idReferences = domReferencesCreator(elementsById, getElementById);
+const classReferences = domReferencesCreator(
+  elementsByClassName,
+  getElementsByClassName
+);
+const tagReferences = domReferencesCreator(
+  elementsByTagName,
+  getElementsbyTagName
+);
+
+function getElementById(id) {
+  return document.getElementById(id);
+}
+
+function getElementsByClassName(className) {
+  return document.querySelector(`.${className}`);
+}
+
+function getElementsbyTagName(tagName) {
+  return document.getElementsByTagName(tagName);
+}
+
+function domReferencesCreator(references, getReferencesFn) {
+  return references.reduce((acc, curr) => {
+    acc[transformToCamelCase(curr)] = getReferencesFn.bind(undefined, curr);
+    return acc;
+  }, {});
+}
+
+const domReferences = Object.assign(
+  {},
+  idReferences,
+  classReferences,
+  tagReferences
+);
 
 export default domReferences;
