@@ -18,4 +18,5 @@ export const htmlElements = [
   "select",
   "option",
   "label",
+  "button",
 ];
