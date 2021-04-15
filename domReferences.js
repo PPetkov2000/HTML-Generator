@@ -1,21 +1,23 @@
 import { transformToCamelCase } from "./utils.js";
 
 const elementsById = [
+  "generate-element-wrapper",
   "generated-elements",
-  "generate-nested-element-wrapper",
   "select-elements",
   "element-content",
   "element-attributes",
   "element-attributes-input",
   "generate-button",
-  "add-nested-element-button",
 ];
 
 const elementsByClassName = [
+  "nested-element-fields",
   "nested-element-select",
   "nested-element-content",
   "nested-element-attributes-select",
   "nested-element-attributes-input",
+  "add-nested-element-button",
+  "close-button",
 ];
 
 const elementsByTagName = [];
