@@ -54,6 +54,7 @@ select {
   border: none;
   border-radius: 5px;
   cursor: pointer;
+  outline: none;
 }
 
 .generate-button:hover {
@@ -62,4 +63,19 @@ select {
 
 .generated-elements {
   padding: 1rem;
+}
+
+.close-button {
+  background-color: rgb(243, 32, 32);
+  width: 2rem;
+  height: 2rem;
+  margin: 0 0.3rem;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  outline: none;
+}
+
+.close-button:hover {
+  background-color: rgb(223, 2, 2);
 }
