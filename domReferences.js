@@ -3,21 +3,17 @@ import { transformToCamelCase } from "./utils.js";
 const elementsById = [
   "generate-element-wrapper",
   "generated-elements",
-  "select-elements",
-  "element-content",
-  "element-attributes",
-  "element-attributes-input",
   "generate-button",
 ];
 
 const elementsByClassName = [
-  "nested-element-fields",
-  "nested-element-select",
-  "nested-element-content",
-  "nested-element-attributes-select",
-  "nested-element-attributes-input",
+  "select-elements",
+  "element-content",
+  "element-attributes",
+  "element-attributes-input",
   "add-nested-element-button",
   "close-button",
+  "element-fields",
 ];
 
 const elementsByTagName = [];
@@ -36,8 +32,13 @@ function getElementById(id) {
   return document.getElementById(id);
 }
 
-function getElementsByClassName(className) {
+function getSingleElementByClassName(className) {
   return document.querySelector(`.${className}`);
+}
+
+function getElementsByClassName(className) {
+  const elements = document.querySelectorAll(`.${className}`);
+  return elements.length === 1 ? elements[0] : elements;
 }
 
 function getElementsbyTagName(tagName) {
