@@ -32,10 +32,6 @@ function getElementById(id) {
   return document.getElementById(id);
 }
 
-function getSingleElementByClassName(className) {
-  return document.querySelector(`.${className}`);
-}
-
 function getElementsByClassName(className) {
   const elements = document.querySelectorAll(`.${className}`);
   return elements.length === 1 ? elements[0] : elements;
