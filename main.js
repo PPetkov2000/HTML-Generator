@@ -2,7 +2,7 @@ import htmlFactory from "./htmlFactory.js";
 import domReferences from "./domReferences.js";
 import { htmlElements } from "./htmlElements.js";
 import { htmlAttributes } from "./htmlAttributes.js";
-import { getAttributes, capitalize } from "./utils.js";
+import { getAttributes, capitalize, elementsExist } from "./utils.js";
 
 const {
   createDiv,
@@ -18,9 +18,7 @@ const actions = {
   buildElementFields: () => {
     const selectElementsFormGroup = createDiv(
       [
-        createLabel("Generate HTML element", {
-          htmlFor: "nested-element-select",
-        }),
+        createLabel("Generate HTML element"),
         createSelect(
           [
             createOption(""),
@@ -28,35 +26,29 @@ const actions = {
               createOption(element, { value: element })
             ),
           ],
-          { id: "select-elements", className: "select-elements" }
+          { className: "select-elements" }
         ),
       ],
       { className: "form-group" }
     );
     const elementContentFormGroup = createDiv(
       [
-        createLabel("Element content", {
-          htmlFor: "nested-element-select",
-        }),
+        createLabel("Element content"),
         createInput("", {
-          id: "element-content",
           className: "element-content",
           placeholder: "Element content",
         }),
         createSpan("OR"),
         createButton("Add nested element", {
-          id: "add-nested-element-button",
           className: "add-nested-element-button generate-button",
         }),
-        createButton("X", { id: "close-button", className: "close-button" }),
+        createButton("X", { className: "close-button" }),
       ],
       { className: "form-group" }
     );
     const selectAttributesFormGroup = createDiv(
       [
-        createLabel("Attributes", {
-          htmlFor: "element-attributes",
-        }),
+        createLabel("Attributes"),
         createSelect(
           [
             createOption(""),
@@ -64,122 +56,62 @@ const actions = {
               createOption(attribute, { value: attribute })
             ),
           ],
-          {
-            id: "element-attributes",
-            className: "element-attributes",
-          }
+          { className: "element-attributes" }
         ),
         createInput("", {
-          id: "element-attributes-input",
           className: "element-attributes-input",
           placeholder: "Element attributes",
         }),
       ],
       { className: "form-group" }
     );
-
-    domReferences
-      .generateElementWrapper()
-      .prepend(
+    const elementFields = createDiv(
+      [
         selectElementsFormGroup,
         elementContentFormGroup,
-        selectAttributesFormGroup
-      );
+        selectAttributesFormGroup,
+      ],
+      { className: "element-fields" }
+    );
+
+    domReferences.generateElementWrapper().appendChild(elementFields);
   },
   buildElement: () => {
-    if (!domReferences.selectElements().value) return;
-
-    const attributes = getAttributes(
-      domReferences.elementAttributes(),
-      domReferences.elementAttributesInput()
+    const elementFields = domReferences.elementFields();
+    const lastElementFields =
+      elementFields.length > 1
+        ? elementFields[elementFields.length - 1]
+        : elementFields;
+    const selectElements = lastElementFields.querySelector(".select-elements");
+    const elementContent = lastElementFields.querySelector(".element-content");
+    const elementAttributes = lastElementFields.querySelector(
+      ".element-attributes"
     );
-    const nestedAttributes = getAttributes(
-      domReferences.nestedElementAttributesSelect(),
-      domReferences.nestedElementAttributesInput()
+    const elementAttributesInput = lastElementFields.querySelector(
+      ".element-attributes-input"
     );
+    function generateNestedElement() {
+      const element = generateElement(
+        htmlFactory,
+        `create${capitalize(selectElements.value)}`,
+        attributes,
+        elementContent.value
+      );
+      elementFields.forEach((field) => {
+        element.appendChild(field);
+      });
+      console.log(element);
+      return element;
+    }
+    const attributes = getAttributes(elementAttributes, elementAttributesInput);
     const element = generateElement(
       htmlFactory,
-      `create${capitalize(domReferences.selectElements().value)}`,
+      `create${capitalize(selectElements.value)}`,
       attributes,
-      domReferences.nestedElementSelect() &&
-        domReferences.nestedElementSelect().value
-        ? generateElement(
-            htmlFactory,
-            `create${capitalize(domReferences.nestedElementSelect().value)}`,
-            nestedAttributes,
-            domReferences.nestedElementContent().value
-          )
-        : domReferences.elementContent().value
+      elementFields.length > 1 ? generateNestedElement : elementContent.value
     );
+    console.log(element);
     domReferences.generatedElements().appendChild(element);
-  },
-  buildNestedElementFields: () => {
-    domReferences.elementContent().disabled = true;
-    domReferences.elementContent().value = "";
-
-    const selectElementsFormGroup = createDiv(
-      [
-        createLabel("Generate nested element", {
-          htmlFor: "nested-element-select",
-        }),
-        createSelect(
-          [
-            createOption(""),
-            ...htmlElements.map((element) =>
-              createOption(element, { value: element })
-            ),
-          ],
-          { id: "nested-element-select", className: "nested-element-select" }
-        ),
-      ],
-      { className: "form-group" }
-    );
-    const elementContentFormGroup = createDiv(
-      [
-        createLabel("Nested element content", {
-          htmlFor: "nested-element-select",
-        }),
-        createInput("", {
-          id: "nested-element-content",
-          className: "nested-element-content",
-          placeholder: "Nested element content",
-        }),
-      ],
-      { className: "form-group" }
-    );
-    const selectAttributesFormGroup = createDiv(
-      [
-        createLabel("Nested element attributes", {
-          htmlFor: "nested-element-attributes-select",
-        }),
-        createSelect(
-          [
-            createOption(""),
-            ...htmlAttributes.map((attribute) =>
-              createOption(attribute, { value: attribute })
-            ),
-          ],
-          {
-            id: "nested-element-attributes-select",
-            className: "nested-element-attributes-select",
-          }
-        ),
-        createInput("", {
-          id: "nested-element-attributes-input",
-          className: "nested-element-attributes-input",
-          placeholder: "Nested element attributes",
-        }),
-      ],
-      { className: "form-group" }
-    );
-
-    domReferences
-      .nestedElementFields()
-      .append(
-        selectElementsFormGroup,
-        elementContentFormGroup,
-        selectAttributesFormGroup
-      );
   },
   removeElementFields: (e) => {
     console.log(e.target);
@@ -191,7 +123,7 @@ actions.buildElementFields();
 domReferences.generateButton().addEventListener("click", actions.buildElement);
 domReferences
   .addNestedElementButton()
-  .addEventListener("click", actions.buildNestedElementFields);
+  .addEventListener("click", actions.buildElementFields);
 domReferences
   .closeButton()
   .addEventListener("click", actions.removeElementFields);
@@ -201,3 +133,11 @@ function generateElement(factory, elementCreator, attributes, content) {
     return factory[elementCreator](content, attributes);
   }
 }
+
+// function clickHandler(e) {
+//   if (typeof actions[e.target.id] === "function") {
+//     actions[e.target.id]();
+//   }
+// }
+
+// document.addEventListener("click", clickHandler)
