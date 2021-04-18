@@ -2,7 +2,7 @@ import htmlFactory from "./htmlFactory.js";
 import domReferences from "./domReferences.js";
 import { htmlElements } from "./htmlElements.js";
 import { htmlAttributes } from "./htmlAttributes.js";
-import { getAttributes, capitalize, elementsExist } from "./utils.js";
+import { getAttributes, capitalize, transformToCamelCase } from "./utils.js";
 
 const {
   createDiv,
@@ -13,6 +13,8 @@ const {
   createSpan,
   createButton,
 } = htmlFactory;
+
+let parentElement = null;
 
 const actions = {
   buildElementFields: () => {
@@ -31,6 +33,14 @@ const actions = {
       ],
       { className: "form-group" }
     );
+    const addNestedElementButton = createButton("Add nested element", {
+      className: "add-nested-element-button generate-button",
+    });
+    const removeElementButton = createButton("X", {
+      className: "close-button",
+    });
+    addNestedElementButton.setAttribute("data-id", "build-element-fields");
+    removeElementButton.setAttribute("data-id", "remove-element-fields");
     const elementContentFormGroup = createDiv(
       [
         createLabel("Element content"),
@@ -39,10 +49,8 @@ const actions = {
           placeholder: "Element content",
         }),
         createSpan("OR"),
-        createButton("Add nested element", {
-          className: "add-nested-element-button generate-button",
-        }),
-        createButton("X", { className: "close-button" }),
+        addNestedElementButton,
+        removeElementButton,
       ],
       { className: "form-group" }
     );
@@ -82,36 +90,44 @@ const actions = {
       elementFields.length > 1
         ? elementFields[elementFields.length - 1]
         : elementFields;
-    const selectElements = lastElementFields.querySelector(".select-elements");
-    const elementContent = lastElementFields.querySelector(".element-content");
-    const elementAttributes = lastElementFields.querySelector(
-      ".element-attributes"
+    // const selectElements = lastElementFields.querySelector(".select-elements");
+    // const elementContent = lastElementFields.querySelector(".element-content");
+    // const elementAttributes = lastElementFields.querySelector(
+    //   ".element-attributes"
+    // );
+    // const elementAttributesInput = lastElementFields.querySelector(
+    //   ".element-attributes-input"
+    // );
+    const [
+      selectElements,
+      elementContent,
+      elementAttributes,
+      elementAttributesInput,
+    ] = getChildElements(
+      lastElementFields,
+      "select-elements",
+      "element-content",
+      "element-attributes",
+      "element-attributes-input"
     );
-    const elementAttributesInput = lastElementFields.querySelector(
-      ".element-attributes-input"
-    );
-    function generateNestedElement() {
-      const element = generateElement(
-        htmlFactory,
-        `create${capitalize(selectElements.value)}`,
-        attributes,
-        elementContent.value
-      );
-      elementFields.forEach((field) => {
-        element.appendChild(field);
-      });
-      console.log(element);
-      return element;
-    }
+
     const attributes = getAttributes(elementAttributes, elementAttributesInput);
     const element = generateElement(
       htmlFactory,
       `create${capitalize(selectElements.value)}`,
       attributes,
-      elementFields.length > 1 ? generateNestedElement : elementContent.value
+      elementContent.value
     );
-    console.log(element);
-    domReferences.generatedElements().appendChild(element);
+
+    if (!parentElement) {
+      parentElement = element;
+    } else {
+      let currentParentElement = parentElement;
+      currentParentElement = checkForChildren(parentElement);
+      currentParentElement.appendChild(element);
+    }
+
+    domReferences.generatedElements().appendChild(parentElement);
   },
   removeElementFields: (e) => {
     console.log(e.target);
@@ -120,24 +136,29 @@ const actions = {
 
 actions.buildElementFields();
 
-domReferences.generateButton().addEventListener("click", actions.buildElement);
-domReferences
-  .addNestedElementButton()
-  .addEventListener("click", actions.buildElementFields);
-domReferences
-  .closeButton()
-  .addEventListener("click", actions.removeElementFields);
-
 function generateElement(factory, elementCreator, attributes, content) {
   if (typeof factory[elementCreator] === "function") {
     return factory[elementCreator](content, attributes);
   }
 }
 
-// function clickHandler(e) {
-//   if (typeof actions[e.target.id] === "function") {
-//     actions[e.target.id]();
-//   }
-// }
+function checkForChildren(element) {
+  if (element.children.length === 0) return element;
+  return checkForChildren(element.children[0]);
+}
 
-// document.addEventListener("click", clickHandler)
+function getChildElements(parentElement, ...elements) {
+  return elements.map((element) => parentElement.querySelector(`.${element}`));
+}
+
+function disableFields(fields) {}
+
+function clickHandler(e) {
+  if (!e.target.dataset.id) return;
+  const dataId = transformToCamelCase(e.target.dataset.id);
+  if (typeof actions[dataId] === "function") {
+    actions[dataId](e);
+  }
+}
+
+document.addEventListener("click", clickHandler);
