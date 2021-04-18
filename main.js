@@ -90,14 +90,6 @@ const actions = {
       elementFields.length > 1
         ? elementFields[elementFields.length - 1]
         : elementFields;
-    // const selectElements = lastElementFields.querySelector(".select-elements");
-    // const elementContent = lastElementFields.querySelector(".element-content");
-    // const elementAttributes = lastElementFields.querySelector(
-    //   ".element-attributes"
-    // );
-    // const elementAttributesInput = lastElementFields.querySelector(
-    //   ".element-attributes-input"
-    // );
     const [
       selectElements,
       elementContent,
