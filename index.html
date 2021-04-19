@@ -6,14 +6,28 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>HTML Generator</title>
     <link rel="stylesheet" href="styles.css" />
-    <script src="main.js" type="module" defer></script>
+    <script src="main.js" type="module"></script>
   </head>
   <body>
+    <h1 class="content-title">HTML Generator</h1>
     <div class="content-wrapper">
-      <h1 class="content-title">HTML Generator</h1>
       <div id="generate-element-wrapper" class="generate-element-wrapper">
-        <button id="generate-button" class="generate-button">Generate</button>
+        <button
+          id="generate-button"
+          class="generate-button"
+          data-id="output-element"
+        >
+          Generate
+        </button>
+        <button
+          id="add-nested-element-button"
+          class="add-nested-element-button generate-button"
+          data-id="build-element"
+        >
+          Add nested element
+        </button>
       </div>
+      <div id="generated-elements-graph" class="generated-elements-graph"></div>
       <div id="generated-elements" class="generated-elements"></div>
     </div>
   </body>
