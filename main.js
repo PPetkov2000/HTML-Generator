@@ -14,7 +14,7 @@ const {
   createButton,
 } = htmlFactory;
 
-let parentElement = null;
+const graphElements = [];
 
 const actions = {
   buildElementFields: () => {
@@ -33,14 +33,6 @@ const actions = {
       ],
       { className: "form-group" }
     );
-    const addNestedElementButton = createButton("Add nested element", {
-      className: "add-nested-element-button generate-button",
-    });
-    const removeElementButton = createButton("X", {
-      className: "close-button",
-    });
-    addNestedElementButton.setAttribute("data-id", "build-element-fields");
-    removeElementButton.setAttribute("data-id", "remove-element-fields");
     const elementContentFormGroup = createDiv(
       [
         createLabel("Element content"),
@@ -48,9 +40,6 @@ const actions = {
           className: "element-content",
           placeholder: "Element content",
         }),
-        createSpan("OR"),
-        addNestedElementButton,
-        removeElementButton,
       ],
       { className: "form-group" }
     );
@@ -85,44 +74,29 @@ const actions = {
     domReferences.generateElementWrapper().appendChild(elementFields);
   },
   buildElement: () => {
-    const elementFields = domReferences.elementFields();
-    const lastElementFields =
-      elementFields.length > 1
-        ? elementFields[elementFields.length - 1]
-        : elementFields;
-    const [
-      selectElements,
-      elementContent,
-      elementAttributes,
-      elementAttributesInput,
-    ] = getChildElements(
-      lastElementFields,
-      "select-elements",
-      "element-content",
-      "element-attributes",
-      "element-attributes-input"
+    graphElements.push(domReferences.selectElements().value);
+    const graphDomElements = graphElements.map((element) =>
+      createDiv(element, { className: "graph-element" })
     );
-
-    const attributes = getAttributes(elementAttributes, elementAttributesInput);
-    const element = generateElement(
-      htmlFactory,
-      `create${capitalize(selectElements.value)}`,
-      attributes,
-      elementContent.value
-    );
-
-    if (!parentElement) {
-      parentElement = element;
-    } else {
-      let currentParentElement = parentElement;
-      currentParentElement = checkForChildren(parentElement);
-      currentParentElement.appendChild(element);
-    }
-
-    domReferences.generatedElements().appendChild(parentElement);
+    console.log(graphElements);
+    console.log(graphDomElements);
+    const graphDomElementsWrapper = createDiv(graphDomElements, {
+      id: "graph-elements-wrapper",
+      className: "graph-elements-wrapper",
+    });
+    [...graphDomElementsWrapper.children].forEach((child, index) => {
+      child.style.marginLeft = `${index * 20}px`;
+    });
+    domReferences.generatedElementsGraph().innerHTML = "";
+    domReferences.generatedElementsGraph().appendChild(graphDomElementsWrapper);
   },
   removeElementFields: (e) => {
     console.log(e.target);
+  },
+  outputElement: () => {
+    [...domReferences.generatedElementsGraph().children].forEach((child) => {
+      domReferences.generatedElements().appendChild(child);
+    });
   },
 };
 
@@ -139,12 +113,6 @@ function checkForChildren(element) {
   return checkForChildren(element.children[0]);
 }
 
-function getChildElements(parentElement, ...elements) {
-  return elements.map((element) => parentElement.querySelector(`.${element}`));
-}
-
-function disableFields(fields) {}
-
 function clickHandler(e) {
   if (!e.target.dataset.id) return;
   const dataId = transformToCamelCase(e.target.dataset.id);
@@ -154,3 +122,37 @@ function clickHandler(e) {
 }
 
 document.addEventListener("click", clickHandler);
+
+//  buildElement: () => {
+//    const elementFields = domReferences.elementFields();
+//    const lastElementFields =
+//      elementFields.length > 1
+//        ? elementFields[elementFields.length - 1]
+//        : elementFields;
+//    const selectElements = lastElementFields.querySelector(".select-elements");
+//    const elementContent = lastElementFields.querySelector(".element-content");
+//    const elementAttributes = lastElementFields.querySelector(
+//      ".element-attributes"
+//    );
+//    const elementAttributesInput = lastElementFields.querySelector(
+//      ".element-attributes-input"
+//    );
+
+//    const attributes = getAttributes(elementAttributes, elementAttributesInput);
+//    const element = generateElement(
+//      htmlFactory,
+//      `create${capitalize(selectElements.value)}`,
+//      attributes,
+//      elementContent.value
+//    );
+
+//    if (!parentElement) {
+//      parentElement = element;
+//    } else {
+//      let currentParentElement = parentElement;
+//      currentParentElement = checkForChildren(parentElement);
+//      currentParentElement.appendChild(element);
+//    }
+
+//    domReferences.generatedElementsGraph().appendChild(parentElement);
+//  };
