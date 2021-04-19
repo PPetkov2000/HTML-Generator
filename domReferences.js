@@ -3,6 +3,7 @@ import { transformToCamelCase } from "./utils.js";
 const elementsById = [
   "generate-element-wrapper",
   "generated-elements",
+  "generated-elements-graph",
   "generate-button",
 ];
 
