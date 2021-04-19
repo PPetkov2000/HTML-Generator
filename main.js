@@ -78,15 +78,19 @@ const actions = {
     const graphDomElements = graphElements.map((element) =>
       createDiv(element, { className: "graph-element" })
     );
-    console.log(graphElements);
-    console.log(graphDomElements);
     const graphDomElementsWrapper = createDiv(graphDomElements, {
       id: "graph-elements-wrapper",
       className: "graph-elements-wrapper",
     });
-    [...graphDomElementsWrapper.children].forEach((child, index) => {
+    const graphDomElementsChildren = [...graphDomElementsWrapper.children];
+    const lastGraphChild =
+      graphDomElementsChildren[graphDomElementsChildren.length - 1];
+    graphDomElementsChildren.forEach((child, index) => {
       child.style.marginLeft = `${index * 20}px`;
     });
+    if (domReferences.elementContent().value) {
+      lastGraphChild.textContent = domReferences.elementContent().value;
+    }
     domReferences.generatedElementsGraph().innerHTML = "";
     domReferences.generatedElementsGraph().appendChild(graphDomElementsWrapper);
   },
