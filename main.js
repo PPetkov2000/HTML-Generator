@@ -94,7 +94,7 @@ const actions = {
     domReferences.generatedElementsGraph().innerHTML = "";
     domReferences.generatedElementsGraph().appendChild(graphDomElementsWrapper);
   },
-  removeElementFields: (e) => {
+  removeElement: (e) => {
     console.log(e.target);
   },
   outputElement: () => {
