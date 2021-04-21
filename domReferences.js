@@ -13,7 +13,6 @@ const elementsByClassName = [
   "element-attributes",
   "element-attributes-input",
   "add-nested-element-button",
-  "close-button",
   "element-fields",
 ];
 
