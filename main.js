@@ -74,9 +74,28 @@ const actions = {
     domReferences.generateElementWrapper().appendChild(elementFields);
   },
   buildElement: () => {
-    graphElements.push(domReferences.selectElements().value);
+    const currentElement = {
+      element: domReferences.selectElements().value,
+      attributes: getAttributes(
+        domReferences.elementAttributes(),
+        domReferences.elementAttributesInput()
+      ),
+      value: domReferences.elementContent().value,
+      children: [],
+      parentElement: null,
+    };
+    if (graphElements.length === 0) {
+      graphElements.push(currentElement);
+    } else {
+      currentElement.parentElement = graphElements[graphDomElements.length - 1];
+      const parentElement = graphElements.find(
+        (x) => x.element === currentElement.parentElement
+      );
+      parentElement.children.push(currentElement);
+    }
+    console.log(graphElements);
     const graphDomElements = graphElements.map((element) =>
-      createDiv(element, { className: "graph-element" })
+      createDiv(element.element, { className: "graph-element" })
     );
     const graphDomElementsWrapper = createDiv(graphDomElements, {
       id: "graph-elements-wrapper",
@@ -98,9 +117,28 @@ const actions = {
     console.log(e.target);
   },
   outputElement: () => {
+    const elements = graphElements.map((element) =>
+      generateElement(
+        htmlFactory,
+        `create${capitalize(element)}`,
+        "attributes",
+        "value"
+      )
+    );
+    const element = generateElement(
+      htmlFactory,
+      `create${capitalize(domReferences.selectElements().value)}`,
+      getAttributes(
+        domReferences.elementAttributes(),
+        domReferences.elementAttributesInput()
+      ),
+      domReferences.elementContent().value
+    );
+    console.log(element);
     [...domReferences.generatedElementsGraph().children].forEach((child) => {
       domReferences.generatedElements().appendChild(child);
     });
+    // domReferences.generatedElements();
   },
 };
 
