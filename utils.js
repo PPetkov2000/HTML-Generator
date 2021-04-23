@@ -1,3 +1,4 @@
+// DOM utils
 function createElement(type, content, attributes) {
   const element = document.createElement(type);
 
@@ -29,12 +30,22 @@ function getAttributes(select, input) {
   return attributes;
 }
 
-function capitalize(str) {
-  return str.slice(0, 1).toUpperCase() + str.slice(1).toLowerCase();
-}
-
 function elementsExist(...elements) {
   return elements.every((element) => element != null);
+}
+
+function getChildren(element, childElementsFound = []) {
+  if (element.children.length === 0) return;
+  element.children.forEach((child) => {
+    childElementsFound.push(child);
+    getChildren(child, childElementsFound);
+  });
+  return childElementsFound;
+}
+
+// String utils
+function capitalize(str) {
+  return str.slice(0, 1).toUpperCase() + str.slice(1).toLowerCase();
 }
 
 function transformToCamelCase(str) {
@@ -48,7 +59,8 @@ function transformToCamelCase(str) {
 export {
   createElement,
   getAttributes,
-  capitalize,
   elementsExist,
+  getChildren,
+  capitalize,
   transformToCamelCase,
 };
