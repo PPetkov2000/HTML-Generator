@@ -127,9 +127,27 @@ const actions = {
       )
     );
     console.log(graphDomElements);
-    graphDomElements.forEach((element) => {
-      domReferences.generatedElements().appendChild(element);
-    });
+    console.log(graphElements);
+    let parentElement = graphElements[0];
+    function getChildElements(element) {
+      if (element.children.length === 0) return;
+      element.children.forEach((child) => {
+        const el = htmlFactory[`create${capitalize(child.element)}`](
+          child.value,
+          child.attributes
+        );
+        if (el.parentElement === element) {
+          parentElement.appendChild(el);
+        }
+        getChildElements(child);
+      });
+      console.log(element);
+      // domReferences.generatedElements().appendChild(element);
+    }
+    getChildElements(graphElements[0]);
+    // graphDomElements.forEach((element) => {
+    //   domReferences.generatedElements().appendChild(element);
+    // });
   },
 };
 
