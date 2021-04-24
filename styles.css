@@ -33,14 +33,17 @@ body {
 }
 
 .generate-element-wrapper {
-  background-color: gray;
+  background-color: #777;
 }
 
 .generated-elements-graph {
-  background-color: gray;
+  background-color: #777;
 }
 
 .generated-elements-graph .graph-element {
+  width: -webkit-fit-content;
+  width: -moz-fit-content;
+  width: fit-content;
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
@@ -61,15 +64,11 @@ body {
   margin-left: -9px;
   border-top: 6px solid transparent;
   border-bottom: 6px solid transparent;
-  border-left: 6px solid #333030;
-}
-
-.generated-elements-graph .graph-element::after {
-  content: "x";
+  border-left: 6px solid #1d1d1d;
 }
 
 .generated-elements {
-  background-color: gray;
+  background-color: #777;
   -ms-grid-column: 1;
   -ms-grid-column-span: 2;
   grid-column: 1 / 3;
@@ -95,7 +94,7 @@ select {
 .generate-button {
   -ms-flex-item-align: start;
       align-self: flex-start;
-  background-color: #0da10d;
+  background-color: #3792ce;
   padding: 0.5rem 1rem;
   font-size: 1rem;
   border: none;
@@ -105,21 +104,43 @@ select {
 }
 
 .generate-button:hover {
-  background-color: green;
+  background-color: #246894;
 }
 
-.close-button {
-  background-color: #f32020;
-  width: 2rem;
-  height: 2rem;
-  margin: 0 0.3rem;
-  border: none;
-  border-radius: 5px;
+.remove-element {
+  position: relative;
+  height: 12px;
+  width: 12px;
+  margin-left: 6px;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
   cursor: pointer;
-  outline: none;
 }
 
-.close-button:hover {
-  background-color: #df0202;
+.remove-element::before,
+.remove-element::after {
+  content: "";
+  position: absolute;
+  width: 100%;
+  height: 2px;
+  background-color: #f02d2d;
+}
+
+.remove-element::before {
+  -webkit-transform: rotate(45deg);
+          transform: rotate(45deg);
+}
+
+.remove-element::after {
+  -webkit-transform: rotate(-45deg);
+          transform: rotate(-45deg);
 }
 /*# sourceMappingURL=styles.css.map */
