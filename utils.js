@@ -1,3 +1,5 @@
+import htmlFactory from "./htmlFactory.js";
+
 // DOM utils
 function createElement(type, content, attributes) {
   const element = document.createElement(type);
@@ -43,6 +45,17 @@ function getChildren(element, childElementsFound = []) {
   return childElementsFound;
 }
 
+function getInnermostChild(element) {
+  if (element.children.length === 0) return element;
+  return getInnermostChild(element.children[0]);
+}
+
+function generateElement(elementCreator, attributes, content) {
+  if (typeof htmlFactory[elementCreator] === "function") {
+    return htmlFactory[elementCreator](content, attributes);
+  }
+}
+
 // String utils
 function capitalize(str) {
   return str.slice(0, 1).toUpperCase() + str.slice(1).toLowerCase();
@@ -61,6 +74,8 @@ export {
   getAttributes,
   elementsExist,
   getChildren,
+  generateElement,
+  getInnermostChild,
   capitalize,
   transformToCamelCase,
 };
