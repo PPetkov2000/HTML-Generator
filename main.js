@@ -4,7 +4,8 @@ import { htmlElements } from "./htmlElements.js";
 import { htmlAttributes } from "./htmlAttributes.js";
 import {
   getAttributes,
-  getChildren,
+  generateElement,
+  getInnermostChild,
   capitalize,
   transformToCamelCase,
 } from "./utils.js";
@@ -90,7 +91,7 @@ const actions = {
     if (graphElements.length === 0) {
       graphElements.push(currentElement);
     } else {
-      const innermostElement = checkForChildren(graphElements[0]);
+      const innermostElement = getInnermostChild(graphElements[0]);
       currentElement.parentElement = innermostElement;
       innermostElement.children.push(currentElement);
     }
@@ -113,62 +114,57 @@ const actions = {
       domReferences.elementContent()
     );
   },
+  buildSiblingElement: (e) => {
+    const innermostElement = getInnermostChild(graphElements[0]);
+    const innermostElementParent = innermostElement.parentElement;
+    const createdElement = generateElement(
+      `create${capitalize(domReferences.selectElements().value)}`,
+      domReferences.elementContent().value,
+      getAttributes(
+        domReferences.elementAttributes().value,
+        domReferences.elementAttributesInput().value
+      )
+    );
+    console.log(createdElement);
+    innermostElementParent.appendChild(createdElement);
+  },
   removeElement: (e) => {
     e.target.parentElement.remove();
   },
   outputElement: () => {
-    const children = getChildren(graphElements[0]);
-    const graphDomElements = [graphElements[0], ...children].map((x) =>
-      generateElement(
-        htmlFactory,
-        `create${capitalize(x.element)}`,
-        x.attributes,
-        x.value
-      )
-    );
-    console.log(graphDomElements);
-    console.log(graphElements);
-    let parentElement = graphElements[0];
-    function getChildElements(element) {
+    function buildDomElement(element, domElement = null) {
       if (element.children.length === 0) return;
-      element.children.forEach((child) => {
-        const el = htmlFactory[`create${capitalize(child.element)}`](
-          child.value,
-          child.attributes
+      if (domElement == null) {
+        domElement = generateElement(
+          `create${capitalize(element.element)}`,
+          element.attributes,
+          ""
         );
-        if (el.parentElement === element) {
-          parentElement.appendChild(el);
-        }
-        getChildElements(child);
+      } else {
+        domElement = getInnermostChild(domElement);
+      }
+      element.children.forEach((child) => {
+        const childElement = generateElement(
+          `create${capitalize(child.element)}`,
+          child.attributes,
+          child.children.length === 0 ? child.value : ""
+        );
+        domElement.appendChild(childElement);
+        buildDomElement(child, domElement);
       });
-      console.log(element);
-      // domReferences.generatedElements().appendChild(element);
+      return domElement;
     }
-    getChildElements(graphElements[0]);
-    // graphDomElements.forEach((element) => {
-    //   domReferences.generatedElements().appendChild(element);
-    // });
+    const result = buildDomElement(graphElements[0]);
+    domReferences.generatedElements().appendChild(result);
   },
 };
 
 actions.buildElementFields();
 
-function generateElement(factory, elementCreator, attributes, content) {
-  if (typeof factory[elementCreator] === "function") {
-    return factory[elementCreator](content, attributes);
-  }
-}
-
-function checkForChildren(element) {
-  if (element.children.length === 0) return element;
-  return checkForChildren(element.children[0]);
-}
-
 function resetFields(...fields) {
   fields.forEach((field) => {
     field.value = "";
   });
-  return "Reset fields";
 }
 
 function clickHandler(e) {
