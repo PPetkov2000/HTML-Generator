@@ -1,9 +1,12 @@
 $primary-color: #3792ce;
 $secondary-color: #777;
 $danger-color: rgb(240, 45, 45);
+$success-color: rgb(16, 138, 16);
 $dark-color: #1d1d1d;
 
 $primary-font-family: Helvetica, sans-serif;
+
+$main-transition: 0.3s ease-in-out;
 
 // Media Queries
 $mq-400-down: "only screen and (max-width: 399px)";
