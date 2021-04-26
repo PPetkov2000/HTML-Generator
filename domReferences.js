@@ -5,6 +5,7 @@ const elementsById = [
   "generated-elements",
   "generated-elements-graph",
   "generate-button",
+  "selected-element",
 ];
 
 const elementsByClassName = [
