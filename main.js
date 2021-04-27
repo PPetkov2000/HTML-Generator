@@ -10,72 +10,28 @@ import {
   transformToCamelCase,
 } from "./utils.js";
 
-const {
-  createDiv,
-  createSelect,
-  createOption,
-  createLabel,
-  createInput,
-} = htmlFactory;
+const { createDiv, createOption } = htmlFactory;
 
 const graphElements = [];
+let selectedElementDom = null;
 
 const actions = {
-  buildElementFields: () => {
-    const selectElementsFormGroup = createDiv(
-      [
-        createLabel("Generate HTML element"),
-        createSelect(
-          [
-            createOption(""),
-            ...htmlElements.map((element) =>
-              createOption(element, { value: element })
-            ),
-          ],
-          { className: "select-elements" }
-        ),
-      ],
-      { className: "form-group" }
+  buildSelectOptions: () => {
+    const selectElementOptions = getOptions(htmlElements);
+    const selectElementAttributeOptions = getOptions(htmlAttributes);
+    appendOptions(domReferences.selectElements(), selectElementOptions);
+    appendOptions(
+      domReferences.elementAttributes(),
+      selectElementAttributeOptions
     );
-    const elementContentFormGroup = createDiv(
-      [
-        createLabel("Element content"),
-        createInput("", {
-          className: "element-content",
-          placeholder: "Element content",
-        }),
-      ],
-      { className: "form-group" }
-    );
-    const selectAttributesFormGroup = createDiv(
-      [
-        createLabel("Attributes"),
-        createSelect(
-          [
-            createOption(""),
-            ...htmlAttributes.map((attribute) =>
-              createOption(attribute, { value: attribute })
-            ),
-          ],
-          { className: "element-attributes" }
-        ),
-        createInput("", {
-          className: "element-attributes-input",
-          placeholder: "Element attributes",
-        }),
-      ],
-      { className: "form-group" }
-    );
-    const elementFields = createDiv(
-      [
-        selectElementsFormGroup,
-        elementContentFormGroup,
-        selectAttributesFormGroup,
-      ],
-      { className: "element-fields" }
-    );
-
-    domReferences.generateElementWrapper().appendChild(elementFields);
+    function getOptions(options) {
+      return options.map((option) => createOption(option, { value: option }));
+    }
+    function appendOptions(parentElement, options) {
+      options.forEach((option) => {
+        parentElement.appendChild(option);
+      });
+    }
   },
   buildElement: () => {
     const currentElement = {
@@ -87,9 +43,15 @@ const actions = {
       value: domReferences.elementContent().value,
       children: [],
       parentElement: null,
+      id: Date.now(),
     };
     if (graphElements.length === 0) {
       graphElements.push(currentElement);
+    } else if (selectedElementDom) {
+      console.log(
+        "There is a selected dom element inside the 'buildElement' function"
+      );
+      console.log(selectedElementDom);
     } else {
       const innermostElement = getInnermostChild(graphElements[0]);
       currentElement.parentElement = innermostElement;
@@ -97,11 +59,12 @@ const actions = {
     }
     const removeElementButton = createDiv("", { className: "remove-element" });
     removeElementButton.setAttribute("data-id", "remove-element");
-    domReferences.generatedElementsGraph().appendChild(
-      createDiv([currentElement.element, removeElementButton], {
-        className: "graph-element",
-      })
+    const graphElement = createDiv(
+      [currentElement.element, removeElementButton],
+      { id: currentElement.id, className: "graph-element" }
     );
+    graphElement.setAttribute("data-id", "select-element");
+    domReferences.generatedElementsGraph().appendChild(graphElement);
     [...domReferences.generatedElementsGraph().children].forEach(
       (child, index) => {
         child.style.marginLeft = `${index * 20}px`;
@@ -114,22 +77,39 @@ const actions = {
       domReferences.elementContent()
     );
   },
-  buildSiblingElement: (e) => {
+  buildSiblingElement: () => {
     const innermostElement = getInnermostChild(graphElements[0]);
-    const innermostElementParent = innermostElement.parentElement;
-    const createdElement = generateElement(
-      `create${capitalize(domReferences.selectElements().value)}`,
-      domReferences.elementContent().value,
-      getAttributes(
-        domReferences.elementAttributes().value,
-        domReferences.elementAttributesInput().value
-      )
-    );
-    console.log(createdElement);
-    innermostElementParent.appendChild(createdElement);
+    const parentElement = selectedElementDom
+      ? selectedElementDom.parentElement
+      : innermostElement.parentElement;
+    parentElement.children.push({
+      element: domReferences.selectElements().value,
+      attributes: getAttributes(
+        domReferences.elementAttributes(),
+        domReferences.elementAttributesInput()
+      ),
+      value: domReferences.elementContent().value,
+      children: [],
+      parentElement: null,
+      id: Date.now(),
+    });
   },
   removeElement: (e) => {
     e.target.parentElement.remove();
+  },
+  selectElement: (e) => {
+    function searchElementTree(element) {
+      if (element.children.length === 0) return;
+      if (element.id === Number(e.target.id)) {
+        selectedElementDom = element;
+        return element;
+      }
+      element.children.forEach((child) => {
+        searchElementTree(child);
+      });
+    }
+    searchElementTree(graphElements[0]);
+    domReferences.selectedElement().textContent = `Selected element: ${e.target.textContent}`;
   },
   outputElement: () => {
     function buildDomElement(element, domElement = null) {
@@ -159,7 +139,7 @@ const actions = {
   },
 };
 
-actions.buildElementFields();
+actions.buildSelectOptions();
 
 function resetFields(...fields) {
   fields.forEach((field) => {
