@@ -14,7 +14,6 @@ const elementsByClassName = [
   "element-attributes",
   "element-attributes-input",
   "add-nested-element-button",
-  "element-fields",
 ];
 
 const elementsByTagName = [];
