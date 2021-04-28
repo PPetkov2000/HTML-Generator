@@ -14,6 +14,7 @@ const elementsByClassName = [
   "element-attributes",
   "element-attributes-input",
   "add-nested-element-button",
+  "accordion-button",
 ];
 
 const elementsByTagName = [];
