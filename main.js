@@ -9,6 +9,7 @@ import {
   capitalize,
   transformToCamelCase,
 } from "./utils.js";
+import createAccordion from "./accordion/accordion.js";
 
 const { createDiv, createOption } = htmlFactory;
 
@@ -57,25 +58,19 @@ const actions = {
       currentElement.parentElement = innermostElement;
       innermostElement.children.push(currentElement);
     }
-    const removeElementButton = createDiv("", { className: "remove-element" });
-    removeElementButton.setAttribute("data-id", "remove-element");
-    const graphElement = createDiv(
-      [currentElement.element, removeElementButton],
-      { id: currentElement.id, className: "graph-element" }
-    );
-    graphElement.setAttribute("data-id", "select-element");
-    domReferences.generatedElementsGraph().appendChild(graphElement);
-    [...domReferences.generatedElementsGraph().children].forEach(
-      (child, index) => {
-        child.style.marginLeft = `${index * 20}px`;
-      }
-    );
-    resetFields(
-      domReferences.selectElements(),
-      domReferences.elementAttributes(),
-      domReferences.elementAttributesInput(),
-      domReferences.elementContent()
-    );
+
+    // const removeElementButton = createDiv("", { className: "remove-element" });
+    // removeElementButton.setAttribute("data-id", "remove-element");
+    // const graphElement = createDiv(
+    //   [currentElement.element, removeElementButton],
+    //   { id: currentElement.id, className: "graph-element" }
+    // );
+    // graphElement.setAttribute("data-id", "select-element");
+    // domReferences.generatedElementsGraph().appendChild(graphElement);
+    const elementsGraph = buildElementsGraph(graphElements[0]);
+    domReferences.generatedElementsGraph().innerHTML = "";
+    domReferences.generatedElementsGraph().appendChild(elementsGraph);
+    resetFields();
   },
   buildSiblingElement: () => {
     const innermostElement = getInnermostChild(graphElements[0]);
@@ -93,6 +88,7 @@ const actions = {
       parentElement: null,
       id: Date.now(),
     });
+    resetFields();
   },
   removeElement: (e) => {
     e.target.parentElement.remove();
@@ -141,10 +137,26 @@ const actions = {
 
 actions.buildSelectOptions();
 
-function resetFields(...fields) {
-  fields.forEach((field) => {
-    field.value = "";
+function resetFields() {
+  domReferences.selectElements().value = "";
+  domReferences.elementAttributes().value = "";
+  domReferences.elementAttributesInput().value = "";
+  domReferences.elementContent().value = "";
+}
+
+function buildElementsGraph(element) {
+  const accordion = createAccordion(
+    element.element,
+    element.children.length === 0
+      ? element.value
+      : element.children.map((child) =>
+          createAccordion(child.element, child.value)
+        )
+  );
+  element.children.forEach((child) => {
+    buildElementsGraph(child);
   });
+  return accordion;
 }
 
 function clickHandler(e) {
@@ -156,3 +168,9 @@ function clickHandler(e) {
 }
 
 document.addEventListener("click", clickHandler);
+
+// import Select from "./customSelect/customSelect.js";
+
+// const select = document.getElementById("select");
+// const customSelect = new Select(select);
+// console.log(customSelect);
