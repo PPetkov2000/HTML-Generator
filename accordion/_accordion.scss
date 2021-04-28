@@ -1,0 +1,44 @@
+.accordion-button {
+  background-color: #eee;
+  color: #444;
+  padding: 0.2rem;
+  font-size: 1rem;
+  text-align: left;
+  transition: $main-transition;
+  border: none;
+  outline: none;
+  cursor: pointer;
+
+  &.active {
+    background-color: lighten($dark-color, 15%);
+    color: #fff;
+
+    &::after {
+      content: "\2212";
+    }
+  }
+
+  &::after {
+    content: "\002B";
+    color: #777;
+    font-weight: bold;
+    float: right;
+    margin-left: 5px;
+  }
+
+  &:hover {
+    background-color: lighten($dark-color, 15%);
+    color: #fff;
+  }
+}
+
+.accordion-content {
+  padding: 0 1rem;
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height $main-transition;
+
+  &.show {
+    max-height: fit-content;
+  }
+}
