@@ -168,9 +168,3 @@ function clickHandler(e) {
 }
 
 document.addEventListener("click", clickHandler);
-
-// import Select from "./customSelect/customSelect.js";
-
-// const select = document.getElementById("select");
-// const customSelect = new Select(select);
-// console.log(customSelect);
