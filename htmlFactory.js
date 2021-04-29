@@ -1,8 +1,8 @@
 import { htmlElements } from "./htmlElements.js";
-import { createElement, capitalize } from "./utils.js";
+import { createElement, formatElement } from "./utils.js";
 
 const htmlElementsFactory = htmlElements.reduce((acc, curr) => {
-  acc[`create${capitalize(curr)}`] = createElement.bind(undefined, curr);
+  acc[formatElement(curr)] = createElement.bind(undefined, curr);
   return acc;
 }, {});
 
