@@ -69,6 +69,10 @@ function transformToCamelCase(str) {
   return str;
 }
 
+function formatElement(element) {
+  return `create${capitalize(element)}`;
+}
+
 export {
   createElement,
   getAttributes,
@@ -78,4 +82,5 @@ export {
   getInnermostChild,
   capitalize,
   transformToCamelCase,
+  formatElement,
 };
