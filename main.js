@@ -8,6 +8,7 @@ import {
   getInnermostChild,
   capitalize,
   transformToCamelCase,
+  formatElement,
 } from "./utils.js";
 import createAccordion from "./accordion/accordion.js";
 
@@ -28,9 +29,9 @@ const actions = {
     function getOptions(options) {
       return options.map((option) => createOption(option, { value: option }));
     }
-    function appendOptions(parentElement, options) {
+    function appendOptions(select, options) {
       options.forEach((option) => {
-        parentElement.appendChild(option);
+        select.appendChild(option);
       });
     }
   },
@@ -58,18 +59,7 @@ const actions = {
       currentElement.parentElement = innermostElement;
       innermostElement.children.push(currentElement);
     }
-
-    // const removeElementButton = createDiv("", { className: "remove-element" });
-    // removeElementButton.setAttribute("data-id", "remove-element");
-    // const graphElement = createDiv(
-    //   [currentElement.element, removeElementButton],
-    //   { id: currentElement.id, className: "graph-element" }
-    // );
-    // graphElement.setAttribute("data-id", "select-element");
-    // domReferences.generatedElementsGraph().appendChild(graphElement);
-    const elementsGraph = buildElementsGraph(graphElements[0]);
-    domReferences.generatedElementsGraph().innerHTML = "";
-    domReferences.generatedElementsGraph().appendChild(elementsGraph);
+    renderGraph();
     resetFields();
   },
   buildSiblingElement: () => {
@@ -88,12 +78,14 @@ const actions = {
       parentElement: null,
       id: Date.now(),
     });
+    renderGraph();
     resetFields();
   },
   removeElement: (e) => {
     e.target.parentElement.remove();
   },
   selectElement: (e) => {
+    console.log(e.target);
     function searchElementTree(element) {
       if (element.children.length === 0) return;
       if (element.id === Number(e.target.id)) {
@@ -112,7 +104,7 @@ const actions = {
       if (element.children.length === 0) return;
       if (domElement == null) {
         domElement = generateElement(
-          `create${capitalize(element.element)}`,
+          formatElement(element.element),
           element.attributes,
           ""
         );
@@ -121,7 +113,7 @@ const actions = {
       }
       element.children.forEach((child) => {
         const childElement = generateElement(
-          `create${capitalize(child.element)}`,
+          formatElement(child.element),
           child.attributes,
           child.children.length === 0 ? child.value : ""
         );
@@ -137,26 +129,43 @@ const actions = {
 
 actions.buildSelectOptions();
 
+function buildElementsGraph(element, store = null) {
+  if (store == null) {
+    store = createAccordion(
+      element.element,
+      element.children.length === 0 ? element.value : ""
+    );
+  }
+  store.querySelectorAll(".accordion-button").forEach((buttonElement) => {
+    buttonElement.setAttribute("data-id", "select-element");
+  });
+  element.children.forEach((child) => {
+    const accordion = createAccordion(
+      child.element,
+      child.children.length === 0 ? child.value : ""
+    );
+    const accordionContentElements = store.querySelectorAll(
+      ".accordion-content"
+    );
+    const lastAccordionContentElement =
+      accordionContentElements[accordionContentElements.length - 1];
+    lastAccordionContentElement.appendChild(accordion);
+    buildElementsGraph(child, store);
+  });
+  return store;
+}
+
+function renderGraph() {
+  domReferences.generatedElementsGraph().innerHTML = "";
+  const elementsGraph = buildElementsGraph(graphElements[0]);
+  domReferences.generatedElementsGraph().appendChild(elementsGraph);
+}
+
 function resetFields() {
   domReferences.selectElements().value = "";
   domReferences.elementAttributes().value = "";
   domReferences.elementAttributesInput().value = "";
   domReferences.elementContent().value = "";
-}
-
-function buildElementsGraph(element) {
-  const accordion = createAccordion(
-    element.element,
-    element.children.length === 0
-      ? element.value
-      : element.children.map((child) =>
-          createAccordion(child.element, child.value)
-        )
-  );
-  element.children.forEach((child) => {
-    buildElementsGraph(child);
-  });
-  return accordion;
 }
 
 function clickHandler(e) {
