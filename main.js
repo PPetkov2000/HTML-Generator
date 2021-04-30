@@ -6,13 +6,12 @@ import {
   getAttributes,
   generateElement,
   getInnermostChild,
-  capitalize,
   transformToCamelCase,
   formatElement,
 } from "./utils.js";
 import createAccordion from "./accordion/accordion.js";
 
-const { createDiv, createOption } = htmlFactory;
+const { createOption } = htmlFactory;
 
 const graphElements = [];
 let selectedElementDom = null;
@@ -85,7 +84,6 @@ const actions = {
     e.target.parentElement.remove();
   },
   selectElement: (e) => {
-    console.log(e.target);
     function searchElementTree(element) {
       if (element.children.length === 0) return;
       if (element.id === Number(e.target.id)) {
