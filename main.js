@@ -8,6 +8,7 @@ import {
   getInnermostChild,
   transformToCamelCase,
   formatElement,
+  traverseElement,
 } from "./utils.js";
 import createAccordion from "./accordion/accordion.js";
 
@@ -128,6 +129,11 @@ const actions = {
 actions.buildSelectOptions();
 
 function buildElementsGraph(element, store = null) {
+  const elementsAccordion = traverseElement(element).map((el) =>
+    createAccordion(el.element, el.value)
+  );
+  console.log(elementsAccordion);
+
   if (store == null) {
     store = createAccordion(
       element.element,
@@ -175,3 +181,47 @@ function clickHandler(e) {
 }
 
 document.addEventListener("click", clickHandler);
+
+// const removeElementButton = createDiv("", { className: "remove-element" });
+// removeElementButton.setAttribute("data-id", "remove-element");
+// const graphElement = createDiv(
+//   [currentElement.element, removeElementButton],
+//   { id: currentElement.id, className: "graph-element" }
+// );
+// graphElement.setAttribute("data-id", "select-element");
+// domReferences.generatedElementsGraph().appendChild(graphElement);
+
+import createCustomSelectElement from "./customSelect/customSelect.js";
+
+const select = document.getElementById("select");
+const customSelect = createCustomSelectElement(select);
+console.log(customSelect);
+
+const elementTree = {
+  element: "section",
+  attributes: { id: "sectionId" },
+  value: "section value",
+  children: [
+    {
+      element: "article",
+      attributes: { id: "articleId" },
+      value: "article value",
+      children: [
+        {
+          element: "main",
+          attributes: { id: "mainId" },
+          value: "main value",
+          children: [],
+          parentElement: "article",
+          id: 3,
+        },
+      ],
+      parentElement: "section",
+      id: 2,
+    },
+  ],
+  parentElement: null,
+  id: 1,
+};
+
+console.log(traverseElement(elementTree));
