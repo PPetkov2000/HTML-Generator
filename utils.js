@@ -36,13 +36,13 @@ function elementsExist(...elements) {
   return elements.every((element) => element != null);
 }
 
-function getChildren(element, childElementsFound = []) {
-  if (element.children.length === 0) return;
+function traverseElement(element, childElementsFound = []) {
+  if (element.children.length === 0) return [element];
   element.children.forEach((child) => {
     childElementsFound.push(child);
-    getChildren(child, childElementsFound);
+    traverseElement(child, childElementsFound);
   });
-  return childElementsFound;
+  return [element, ...childElementsFound];
 }
 
 function getInnermostChild(element) {
@@ -77,7 +77,7 @@ export {
   createElement,
   getAttributes,
   elementsExist,
-  getChildren,
+  traverseElement,
   generateElement,
   getInnermostChild,
   capitalize,
