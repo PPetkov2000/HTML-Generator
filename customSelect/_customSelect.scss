@@ -2,6 +2,7 @@
   &-container {
     width: 300px;
     display: grid;
+    position: relative;
   }
 
   &-label {
@@ -31,6 +32,8 @@
     list-style-type: none;
     border: 1px solid black;
     display: none;
+    position: absolute;
+    top: 2rem;
 
     &.show {
       display: block;
