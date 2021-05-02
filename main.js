@@ -50,10 +50,7 @@ const actions = {
     if (graphElements.length === 0) {
       graphElements.push(currentElement);
     } else if (selectedElementDom) {
-      console.log(
-        "There is a selected dom element inside the 'buildElement' function"
-      );
-      console.log(selectedElementDom);
+      selectedElementDom.children.push(currentElement);
     } else {
       const innermostElement = getInnermostChild(graphElements[0]);
       currentElement.parentElement = innermostElement;
@@ -85,17 +82,9 @@ const actions = {
     e.target.parentElement.remove();
   },
   selectElement: (e) => {
-    function searchElementTree(element) {
-      if (element.children.length === 0) return;
-      if (element.id === Number(e.target.id)) {
-        selectedElementDom = element;
-        return element;
-      }
-      element.children.forEach((child) => {
-        searchElementTree(child);
-      });
-    }
-    searchElementTree(graphElements[0]);
+    selectedElementDom = traverseElement(graphElements[0]).find(
+      (el) => el.id === Number(e.target.parentElement.id)
+    );
     domReferences.selectedElement().textContent = `Selected element: ${e.target.textContent}`;
   },
   outputElement: () => {
@@ -129,16 +118,12 @@ const actions = {
 actions.buildSelectOptions();
 
 function buildElementsGraph(element, store = null) {
-  const elementsAccordion = traverseElement(element).map((el) =>
-    createAccordion(el.element, el.value)
-  );
-  console.log(elementsAccordion);
-
   if (store == null) {
     store = createAccordion(
       element.element,
       element.children.length === 0 ? element.value : ""
     );
+    store.id = element.id;
   }
   store.querySelectorAll(".accordion-button").forEach((buttonElement) => {
     buttonElement.setAttribute("data-id", "select-element");
@@ -148,6 +133,11 @@ function buildElementsGraph(element, store = null) {
       child.element,
       child.children.length === 0 ? child.value : ""
     );
+    accordion.id = child.id;
+    if (selectedElementDom) {
+      if (child.parentElement.id === selectedElementDom.id) {
+      }
+    }
     const accordionContentElements = store.querySelectorAll(
       ".accordion-content"
     );
@@ -182,3 +172,10 @@ function clickHandler(e) {
 
 document.addEventListener("click", clickHandler);
 
+if (selectedElementDom) {
+  console.log(
+    traverseElement(graphElements[0]).find(
+      (el) => el.id === selectedElementDom.id
+    )
+  );
+}
