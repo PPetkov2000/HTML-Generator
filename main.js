@@ -173,9 +173,5 @@ function clickHandler(e) {
 document.addEventListener("click", clickHandler);
 
 if (selectedElementDom) {
-  console.log(
-    traverseElement(graphElements[0]).find(
-      (el) => el.id === selectedElementDom.id
-    )
-  );
+  
 }
