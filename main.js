@@ -171,7 +171,3 @@ function clickHandler(e) {
 }
 
 document.addEventListener("click", clickHandler);
-
-if (selectedElementDom) {
-  
-}
