@@ -117,17 +117,18 @@ const actions = {
 
 actions.buildSelectOptions();
 
-function buildElementsGraph(element, store = null) {
-  if (store == null) {
-    store = createAccordion(
+function buildElementsGraph(element, accordions = null) {
+  if (accordions == null) {
+    accordions = createAccordion(
       element.element,
       element.children.length === 0 ? element.value : ""
     );
-    store.id = element.id;
+    accordions.id = element.id;
   }
-  store.querySelectorAll(".accordion-button").forEach((buttonElement) => {
+  accordions.querySelectorAll(".accordion-button").forEach((buttonElement) => {
     buttonElement.setAttribute("data-id", "select-element");
   });
+
   element.children.forEach((child) => {
     const accordion = createAccordion(
       child.element,
@@ -135,18 +136,24 @@ function buildElementsGraph(element, store = null) {
     );
     accordion.id = child.id;
     if (selectedElementDom) {
-      if (child.parentElement.id === selectedElementDom.id) {
-      }
+      const selectedElementAccordion = [
+        ...accordions.querySelectorAll(".accordion"),
+      ].find((x) => x.id === selectedElementDom.id.toString());
+      const selectedElementAccordionContent = selectedElementAccordion.querySelector(
+        ".accordion-content"
+      );
+      selectedElementAccordionContent.appendChild(accordion);
+    } else {
+      const accordionContentElements = accordions.querySelectorAll(
+        ".accordion-content"
+      );
+      const lastAccordionContentElement =
+        accordionContentElements[accordionContentElements.length - 1];
+      lastAccordionContentElement.appendChild(accordion);
     }
-    const accordionContentElements = store.querySelectorAll(
-      ".accordion-content"
-    );
-    const lastAccordionContentElement =
-      accordionContentElements[accordionContentElements.length - 1];
-    lastAccordionContentElement.appendChild(accordion);
-    buildElementsGraph(child, store);
+    buildElementsGraph(child, accordions);
   });
-  return store;
+  return accordions;
 }
 
 function renderGraph() {
