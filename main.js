@@ -186,12 +186,6 @@ function clickHandler(e) {
 
 document.addEventListener("click", clickHandler);
 
-// import createCustomSelectElement from "./customSelect/customSelect.js";
-
-// const select = document.getElementById("select");
-// const customSelect = createCustomSelectElement(select);
-// console.log(customSelect);
-
 const elementTree = {
   element: "section",
   attributes: { id: "sectionId" },
