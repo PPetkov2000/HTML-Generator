@@ -135,22 +135,29 @@ function buildElementsGraph(element, accordions = null) {
       child.children.length === 0 ? child.value : ""
     );
     accordion.id = child.id;
+
+    console.log(selectedElementDom);
     if (selectedElementDom) {
-      const selectedElementAccordion = [
-        ...accordions.querySelectorAll(".accordion"),
-      ].find((x) => x.id === selectedElementDom.id.toString());
-      const selectedElementAccordionContent = selectedElementAccordion.querySelector(
-        ".accordion-content"
+      console.log(child);
+      console.log(selectedElementDom);
+      console.log(
+        Number(accordion.id),
+        selectedElementDom.id,
+        Number(accordion.id) === selectedElementDom.id
       );
-      selectedElementAccordionContent.appendChild(accordion);
-    } else {
-      const accordionContentElements = accordions.querySelectorAll(
-        ".accordion-content"
-      );
-      const lastAccordionContentElement =
-        accordionContentElements[accordionContentElements.length - 1];
-      lastAccordionContentElement.appendChild(accordion);
+      console.log(accordion);
     }
+
+    const accordionContentElements = accordions.querySelectorAll(
+      ".accordion-content"
+    );
+    console.log([...accordions.querySelectorAll(".accordion")]);
+    const accordionContentElement = selectedElementDom
+      ? [...accordions.querySelectorAll(".accordion")]
+          .find((x) => Number(x.id) === selectedElementDom.id)
+          .querySelector(".accordion-content")
+      : accordionContentElements[accordionContentElements.length - 1];
+    accordionContentElement.appendChild(accordion);
     buildElementsGraph(child, accordions);
   });
   return accordions;
@@ -178,3 +185,85 @@ function clickHandler(e) {
 }
 
 document.addEventListener("click", clickHandler);
+
+// import createCustomSelectElement from "./customSelect/customSelect.js";
+
+// const select = document.getElementById("select");
+// const customSelect = createCustomSelectElement(select);
+// console.log(customSelect);
+
+const elementTree = {
+  element: "section",
+  attributes: { id: "sectionId" },
+  value: "section value",
+  children: [
+    {
+      element: "article",
+      attributes: { id: "articleId" },
+      value: "article value",
+      children: [
+        {
+          element: "main",
+          attributes: { id: "mainId" },
+          value: "main value",
+          children: [],
+          parentElement: "article",
+          id: 3,
+        },
+        {
+          element: "aside",
+          attributes: { id: "asideId" },
+          value: "aside value",
+          children: [],
+          parentElement: "article",
+          id: 4,
+        },
+      ],
+      parentElement: "section",
+      id: 2,
+    },
+    {
+      element: "div",
+      attributes: { id: "divId" },
+      value: "div value",
+      children: [],
+      parentElement: "section",
+      id: 5,
+    },
+  ],
+  parentElement: null,
+  id: 1,
+};
+
+// console.log(traverseElement(elementTree));
+setTimeout(() => {
+  selectedElementDom = {
+    element: "article",
+    attributes: { id: "articleId" },
+    value: "article value",
+    children: [
+      {
+        element: "main",
+        attributes: { id: "mainId" },
+        value: "main value",
+        children: [],
+        parentElement: "article",
+        id: 3,
+      },
+      {
+        element: "aside",
+        attributes: { id: "asideId" },
+        value: "aside value",
+        children: [],
+        parentElement: "article",
+        id: 4,
+      },
+    ],
+    parentElement: "section",
+    id: 2,
+  };
+}, 1000);
+console.log(buildElementsGraph(elementTree));
+setTimeout(() => {
+  console.log(buildElementsGraph(elementTree));
+}, 2000);
