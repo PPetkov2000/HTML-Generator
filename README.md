@@ -1,3 +1,3 @@
 # HTML-Generator
 
-- Generate HTML Elements with ease
+- Generate HTML DOM Elements with ease
